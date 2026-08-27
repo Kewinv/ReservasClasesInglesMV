@@ -23,6 +23,7 @@ export default function Card({ clase, onPress }) {
           ${clase.precio.toLocaleString('es-CO')}
         </Text>
       </View>
+      <view></view>
     </Pressable>
   );
 }
