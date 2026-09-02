@@ -125,3 +125,5 @@ export const CLASES = [
  
 export const formatearPrecio = (valor) =>
   '$' + valor.toLocaleString('es-CO') + ' COP';
+
+export const clases = CLASES;

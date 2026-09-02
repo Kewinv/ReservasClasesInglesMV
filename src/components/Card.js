@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  Image,
   View,
   Text,
   Pressable,
@@ -7,121 +8,89 @@ import {
 } from 'react-native';
 
 import EtiquetaNivel from './EtiquetaNivel';
-import { spacing, color, typography } from '../theme';
+import { formatearPrecio } from '../data/clases';
+import { spacing, color, typography, radius } from '../theme';
 
 export default function Card({ clase, onPress }) {
   return (
     <Pressable onPress={onPress} style={styles.contenedor}>
+      <Image source={{ uri: clase.imagen }} style={styles.imagen} />
+
       <View style={styles.contenido}>
         <EtiquetaNivel nivel={clase.nivel} />
 
-        <Text style={styles.profesor}>
-          {clase.profesor.nombre}
+        <Text style={styles.titulo}>{clase.titulo}</Text>
+
+        <Text style={styles.descripcion} numberOfLines={2}>
+          {clase.descripcion}
         </Text>
 
+        <View style={styles.detalleFila}>
+          <Text style={styles.detalle}>{clase.profesor.nombre}</Text>
+          <Text style={styles.detalle}>{clase.duracion} min</Text>
+        </View>
+
+        <View style={styles.detalleFila}>
+          <Text style={styles.detalle}>{clase.modalidad}</Text>
+          <Text style={styles.detalle}>Cupos: {clase.cupos}</Text>
+        </View>
+
         <Text style={styles.precio}>
-          ${clase.precio.toLocaleString('es-CO')}
+          {formatearPrecio(clase.precio)}
         </Text>
       </View>
-      <view></view>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   contenedor: {
-    backgroundColor: color.fondo,
-    borderRadius: 10,
+    backgroundColor: color.superficie,
+    borderRadius: radius.md,
     marginBottom: spacing.md,
     overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: color.border,
+  },
+
+  imagen: {
+    width: '100%',
+    height: 140,
   },
 
   contenido: {
     padding: spacing.md,
   },
 
-  profesor: {
-    ...typography.titulo,
+  titulo: {
+    ...typography.subtitulo,
     marginBottom: spacing.sm,
+  },
+
+  descripcion: {
+    color: color.textoSuave,
+    fontSize: 14,
+    lineHeight: 20,
+    marginBottom: spacing.md,
+  },
+
+  detalleFila: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: spacing.sm,
+    marginBottom: spacing.xs,
+  },
+
+  detalle: {
+    color: color.textoSuave,
+    fontSize: 13,
+    fontWeight: '600',
   },
 
   precio: {
     fontSize: 16,
     fontWeight: 'bold',
+    color: color.primario,
+    marginTop: spacing.sm,
   },
 });
-
-// Precio, nivel y nombre del profesor
-export const CLASES = [
-  {
-    id: '1',
-    nivel: 'Básico',
-    precio: 32000,
-    profesor: {
-      nombre: 'Laura Gómez',
-    },
-  },
-
-  {
-    id: '2',
-    nivel: 'Conversacional',
-    precio: 45000,
-    profesor: {
-      nombre: 'Michael Reed',
-    },
-  },
-
-  {
-    id: '3',
-    nivel: 'Avanzado',
-    precio: 58000,
-    profesor: {
-      nombre: 'Sofía Ramírez',
-    },
-  },
-
-  {
-    id: '4',
-    nivel: 'Intermedio',
-    precio: 38000,
-    profesor: {
-      nombre: 'Andrés Villa',
-    },
-  },
-
-  {
-    id: '5',
-    nivel: 'Intermedio',
-    precio: 42000,
-    profesor: {
-      nombre: 'Emma Clarke',
-    },
-  },
-
-  {
-    id: '6',
-    nivel: 'Avanzado',
-    precio: 65000,
-    profesor: {
-      nombre: 'Daniel Ortiz',
-    },
-  },
-
-  {
-    id: '7',
-    nivel: 'Conversacional',
-    precio: 28000,
-    profesor: {
-      nombre: 'Carolina Peña',
-    },
-  },
-
-  {
-    id: '8',
-    nivel: 'Básico',
-    precio: 30000,
-    profesor: {
-      nombre: 'Julián Mesa',
-    },
-  },
-];
