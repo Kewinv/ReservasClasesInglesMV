@@ -1,171 +1,90 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  FlatList,
-  ScrollView,
-  StyleSheet,
-  Pressable,
-  useWindowDimensions,
-} from 'react-native';
-
+import { View, Text, TextInput, ScrollView, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 
-import Card from '../components/Card';
+import useResponsive from '../hooks/useResponsive';
+import { spacing, colors, typography, radius } from '../theme';
+import { NIVELES } from '../data/clases';
 import NivelFiltro from '../components/NivelFiltro';
-import { spacing, color, typography } from '../theme';
-import { CLASES, NIVELES } from '../data/clases';
 
 export default function ClasesScreen() {
-  const { columns, paddingHorizontal } = useResponsive();
   const insets = useSafeAreaInsets();
+  const { paddingHorizontal } = useResponsive();
   const [nivel, setNivel] = useState('Todos');
   const [busqueda, setBusqueda] = useState('');
 
-  const textoBusqueda = busqueda.trim().toLowerCase();
-  const clasesFiltradas = CLASES.filter((clase) => {
-    const coincideNivel = nivel === 'Todos' || clase.nivel === nivel;
-    const coincideBusqueda =
-      textoBusqueda.length === 0 ||
-      clase.titulo.toLowerCase().includes(textoBusqueda) ||
-      clase.nivel.toLowerCase().includes(textoBusqueda) ||
-      clase.profesor.nombre.toLowerCase().includes(textoBusqueda);
-
-    return coincideNivel && coincideBusqueda;
-  });
-
   return (
-    <View style={[styles.pantalla, { paddingTop: insets.top + spacing.md }]}>
-      <View style={[styles.contenedor, { paddingHorizontal }]}>
-        <Text style={styles.titulo}>Aplicación de clases de inglés</Text>
-        <Text style={styles.subtitulo}>Encuentra una clase por nivel o profesor.</Text>
+    <View style={[style.pantalla, { paddingTop: insets.top + spacing.md }]}>
+      <View style={{ paddingHorizontal }}>
+        <Text style={typography.titulo}>Aplicación de clases de inglés</Text>
 
-        <View style={styles.buscador}>
-          <Text style={styles.iconoBusqueda}>Buscar</Text>
+        <View style={style.buscador}>
+          <Ionicons name="search" size={20} color={colors.textoSuave} />
+
           <TextInput
-            placeholder="Nivel, clase o profesor"
+            placeholder="Buscar por nivel o profesor"
             value={busqueda}
             onChangeText={setBusqueda}
             autoCorrect={false}
             autoComplete="off"
-            style={styles.input}
+            style={style.input}
           />
 
           {busqueda.length > 0 && (
-            <Pressable onPress={() => setBusqueda('')} style={styles.botonLimpiar}>
-              <Text style={styles.textoLimpiar}>X</Text>
-            </Pressable>
+            <Ionicons
+              name="close-circle"
+              size={18}
+              color={colors.textoSuave}
+              onPress={() => setBusqueda('')}
+            />
           )}
         </View>
 
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.filtros}
+          style={{ flexGrow: 0 }}
+          contentContainerStyle={style.filtros}
         >
           {NIVELES.map((item) => (
             <NivelFiltro
               key={item}
               etiqueta={item}
-              activo={nivel === item}
+              activo={item === nivel}
               onPress={() => setNivel(item)}
             />
           ))}
         </ScrollView>
-
-        <FlatList
-          data={clasesFiltradas}
-          key={columns}
-          numColumns={columns}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <View style={[styles.item, columns > 1 && styles.itemGrid]}>
-              <Card clase={item} />
-            </View>
-          )}
-          contentContainerStyle={styles.lista}
-          showsVerticalScrollIndicator={false}
-          ListEmptyComponent={
-            <Text style={styles.sinResultados}>No hay clases con ese filtro.</Text>
-          }
-        />
       </View>
     </View>
   );
 }
 
-function useResponsive() {
-  const { width } = useWindowDimensions();
-  const columns = width >= 720 ? 2 : 1;
-  const paddingHorizontal = width >= 720 ? spacing.xl : spacing.md;
-
-  return { columns, paddingHorizontal };
-}
-
-const styles = StyleSheet.create({
+const style = StyleSheet.create({
   pantalla: {
     flex: 1,
-    backgroundColor: color.fondo,
-  },
-  contenedor: {
-    flex: 1,
-  },
-  titulo: {
-    ...typography.titulo,
-    marginBottom: spacing.xs,
-  },
-  subtitulo: {
-    color: color.textoSuave,
-    fontSize: 15,
-    marginBottom: spacing.md,
+    backgroundColor: colors.fondo,
   },
   buscador: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: color.superficie,
+    gap: spacing.sm,
+    backgroundColor: colors.superficie,
+    borderRadius: radius.md,
+    paddingHorizontal: spacing.lg,
+    height: 46,
+    marginTop: spacing.lg,
     borderWidth: 1,
-    borderColor: color.border,
-    borderRadius: 12,
-    paddingHorizontal: spacing.md,
-    marginBottom: spacing.md,
-  },
-  iconoBusqueda: {
-    color: color.textoSuave,
-    fontSize: 12,
-    fontWeight: '700',
-    marginRight: spacing.sm,
+    borderColor: colors.borde,
   },
   input: {
     flex: 1,
-    paddingVertical: 12,
-    color: color.texto,
-  },
-  botonLimpiar: {
-    width: 28,
-    height: 28,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  textoLimpiar: {
-    color: color.textoSuave,
-    fontWeight: '800',
+    fontSize: 14,
+    color: colors.texto,
+    paddingVertical: 0,
   },
   filtros: {
-    paddingBottom: spacing.md,
-  },
-  lista: {
-    paddingBottom: spacing.xl,
-  },
-  item: {
-    flex: 1,
-  },
-  itemGrid: {
-    marginRight: spacing.md,
-  },
-  sinResultados: {
-    color: color.textoSuave,
-    marginTop: spacing.lg,
-    textAlign: 'center',
+    paddingTop: spacing.xs,
   },
 });

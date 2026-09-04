@@ -1,7 +1,7 @@
 export const color = {
   fondo: '#F5F5F5',
   superficie: '#FFFFFF',
-  primario: '#FF5733',
+  primario: '#080707',
   texto: '#333333',
   textoSuave: '#6B7280',
   border: '#CCCCCC',

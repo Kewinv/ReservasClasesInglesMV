@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  Image,
   View,
   Text,
   Pressable,
@@ -14,8 +13,6 @@ import { spacing, color, typography, radius } from '../theme';
 export default function Card({ clase, onPress }) {
   return (
     <Pressable onPress={onPress} style={styles.contenedor}>
-      <Image source={{ uri: clase.imagen }} style={styles.imagen} />
-
       <View style={styles.contenido}>
         <EtiquetaNivel nivel={clase.nivel} />
 
@@ -51,11 +48,6 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     borderWidth: 1,
     borderColor: color.border,
-  },
-
-  imagen: {
-    width: '100%',
-    height: 140,
   },
 
   contenido: {
