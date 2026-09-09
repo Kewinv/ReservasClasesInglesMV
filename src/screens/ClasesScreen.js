@@ -1,18 +1,33 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, ScrollView, StyleSheet } from 'react-native';
+import React, { useMemo, useState } from 'react';
+import { View, Text, TextInput, ScrollView, StyleSheet, FlatList } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 
 import useResponsive from '../hooks/useResponsive';
 import { spacing, colors, typography, radius } from '../theme';
-import { NIVELES } from '../data/clases';
+import { CLASES, NIVELES } from '../data/clases';
 import NivelFiltro from '../components/NivelFiltro';
+import { Card } from 'react-native-paper';
+import EstadoVacio from '../components/EstadoVacio';
 
 export default function ClasesScreen() {
   const insets = useSafeAreaInsets();
-  const { paddingHorizontal } = useResponsive();
+  const {columnas, paddingHorizontal} = useResponsive();
+
   const [nivel, setNivel] = useState('Todos');
   const [busqueda, setBusqueda] = useState('');
+
+  const resultados = useMemo (() =>{
+    const textoBusqueda = busqueda.trim().toLowerCase();
+    return CLASES.filter((clase)=>{
+      const coincideNivel = nivel === 'Todos' || clase.nivel === nivel;
+      const coincideTextoBusqueda = textoBusqueda === '' ||
+       clase.titulo.toLowerCase().includes(textoBusqueda)||
+       clase.profesor.nombre.toLowerCase().includes(textoBusqueda)
+       return coincideNivel && coincideTextoBusqueda;
+    });
+
+  },[nivel, busqueda]);
 
   return (
     <View style={[style.pantalla, { paddingTop: insets.top + spacing.md }]}>
@@ -56,6 +71,34 @@ export default function ClasesScreen() {
             />
           ))}
         </ScrollView>
+        <FlatList
+          data={resultados}
+          keyExtractor={(item) => item.id}
+          renderItem={({item}) => (
+            <Card
+              clase={item}
+              onPress={()=> navigation.navigate('DetalleClase', {clase: item})}
+            />
+          )}
+          numColumns={columnas}
+          showsVerticalScrollIndicator = {false}
+          contentContainerStyle = {{paddingHorizontal,
+             flexGrow: 1,
+             paddingBottom: spacing.xl
+            }}
+          ListEmptyComponent={
+            <EstadoVacio
+              icono="search-outline"
+              titulo="No encontramos valores de busqueda"
+              Mensaje="Prueba con otro valor de busqueda, nombre del docente o cambia las palabras"
+              textoAccion="Quitar filtros"
+              onAction={()=>{
+                setNivel('Todos');
+                setBusqueda('')
+              }}
+            />
+          }
+        />
       </View>
     </View>
   );
