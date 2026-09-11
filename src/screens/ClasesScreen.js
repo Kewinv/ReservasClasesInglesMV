@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { View, Text, TextInput, ScrollView, StyleSheet, FlatList } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 import { Ionicons } from '@expo/vector-icons';
 
 import useResponsive from '../hooks/useResponsive';
@@ -71,6 +72,7 @@ export default function ClasesScreen() {
             />
           ))}
         </ScrollView>
+        
         <FlatList
           data={resultados}
           keyExtractor={(item) => item.id}

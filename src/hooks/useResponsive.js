@@ -9,7 +9,7 @@ export default function useResponsive() {
   return {
     width,
     height,
-    isTablet,
+    isTable,
     isHorizontal,
     columnas: isTablet ? 2 : 1,
     ancho: isTablet ? 320 : Math.min(width * 0.72, 300),
