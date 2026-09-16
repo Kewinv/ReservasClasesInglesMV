@@ -8,10 +8,10 @@ import useResponsive from '../hooks/useResponsive';
 import { spacing, colors, typography, radius } from '../theme';
 import { CLASES, NIVELES } from '../data/clases';
 import NivelFiltro from '../components/NivelFiltro';
-import { Card } from 'react-native-paper';
+import Card from '../components/Card';
 import EstadoVacio from '../components/EstadoVacio';
 
-export default function ClasesScreen() {
+export default function ClasesScreen({ navigation }) {
   const insets = useSafeAreaInsets();
   const {columnas, paddingHorizontal} = useResponsive();
 

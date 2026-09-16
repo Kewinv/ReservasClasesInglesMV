@@ -1,57 +1,88 @@
-import React, {useState, useMemo, useLayoutEffect} from "react";
-import {View, Text, ScrollView, StyleSheet, Alert, Image} from 'react-native'
+import React, { useLayoutEffect } from "react";
+import { View, Text, ScrollView, StyleSheet, Alert, Image, Pressable } from 'react-native';
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import useResponsive from "../hooks/useResponsive";
-import { colors, spacing, sombra, typography, radius } from "../theme";
-import { clases, formatearPrecio } from "../data/clases";
+import { colors, spacing, typography, radius } from "../theme";
+import { formatearPrecio } from "../data/clases";
 
-export default function DetalleClaseScreen({route, navigation}){
+export default function DetalleClaseScreen({ route, navigation }) {
     const insets = useSafeAreaInsets();
-    const {clase} = route.params;
-    const { isTable } = useResponsive();
+    const { clase } = route.params;
+    const { isTablet } = useResponsive();
 
-    useLayoutEffect(()=>{
-        navigation.setOptions({title: clases.titulo})
+    useLayoutEffect(() => {
+        navigation.setOptions({ title: clase.titulo });
+    }, [navigation, clase.titulo]);
 
-    }, [navigation,clase.titulo])
-
-
-    return(
+    return (
         <View style={styles.pantalla}>
             <ScrollView
-                contentContainerStyle={{paddingBottom: 120}}
+                contentContainerStyle={[styles.contenidoScroll, { paddingBottom: 120 + insets.bottom }]}
                 showsVerticalScrollIndicator={false}
             >
                 <Image
                     source={{uri: clase.imagen}}
-                    style={[styles.portada, {height: isTable ? 300: 200}]}
+                    style={[styles.portada, { height: isTablet ? 300 : 200 }]}
                     resizeMode="cover"
-
                 />
 
-                
-                //profesorNombre: Nombre y apellido // foto
-                //descripcion
-                //precio
-                //duracion
-                //cupos
-                //horario
-                //Boton Realizar reserva
-            </ScrollView>
-        </View>
+                <View style={styles.contenido}>
+                    <Text style={styles.titulo}>{clase.titulo}</Text>
 
-    )
+                    <View style={styles.profesor}>
+                        <Image source={{ uri: clase.profesor.foto }} style={styles.avatar} />
+                        <View>
+                            <Text style={styles.etiqueta}>Profesor</Text>
+                            <Text style={styles.profesorNombre}>{clase.profesor.nombre}</Text>
+                        </View>
+                    </View>
+
+                    <Text style={styles.seccion}>Descripción</Text>
+                    <Text style={styles.descripcion}>{clase.descripcion}</Text>
+
+                    <View style={styles.datos}>
+                        <View style={styles.dato}>
+                            <Ionicons name="time-outline" size={20} color={colors.primario} />
+                            <Text style={styles.datoValor}>{clase.duracion} min</Text>
+                        </View>
+                        <View style={styles.dato}>
+                            <Ionicons name="people-outline" size={20} color={colors.primario} />
+                            <Text style={styles.datoValor}>{clase.cupos} cupos</Text>
+                        </View>
+                    </View>
+
+                    <Text style={styles.seccion}>Horario</Text>
+                    <Text style={styles.descripcion}>{clase.horarios.join(', ')}</Text>
+                </View>
+            </ScrollView>
+
+            <View style={[styles.barra, { paddingBottom: Math.max(spacing.lg, insets.bottom) }]}>
+                <Text style={styles.precio}>{formatearPrecio(clase.precio)}</Text>
+                <Pressable
+                    style={({ pressed }) => [styles.botonReserva, pressed && styles.botonPresionado]}
+                    onPress={() => Alert.alert('Realizar reserva', 'La pantalla de reserva se agregará después.')}
+                >
+                    <Text style={styles.textoBoton}>Realizar reserva</Text>
+                </Pressable>
+            </View>
+        </View>
+    );
+}
 
 const styles = StyleSheet.create({
   pantalla: { flex: 1, backgroundColor: colors.fondo },
+  contenidoScroll: { flexGrow: 1 },
   portada: { width: '100%', backgroundColor: colors.primarioSuave },
+  contenido: { padding: spacing.md },
+  titulo: { ...typography.subtitulo, marginBottom: spacing.md },
   datos: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     backgroundColor: colors.superficie,
     borderRadius: radius.lg,
     paddingVertical: spacing.lg,
+    marginTop: spacing.md,
   },
   dato: { alignItems: 'center', gap: 2 },
   datoValor: { fontSize: 16, fontWeight: '800', color: colors.texto },
@@ -62,9 +93,12 @@ const styles = StyleSheet.create({
     backgroundColor: colors.superficie,
     borderRadius: radius.lg,
     padding: spacing.lg,
+    marginBottom: spacing.md,
   },
   avatar: { width: 48, height: 48, borderRadius: 24, backgroundColor: colors.borde },
+  etiqueta: { fontSize: 13, color: colors.textoSuave, marginBottom: 2 },
   profesorNombre: { fontSize: 15, fontWeight: '700', color: colors.texto },
+  seccion: { ...typography.subtitulo, fontSize: 18, marginTop: spacing.sm },
   descripcion: { ...typography.cuerpo, color: colors.textoSuave, lineHeight: 22, marginTop: spacing.sm },
   barra: {
     position: 'absolute',
@@ -77,9 +111,17 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: colors.borde,
     paddingVertical: spacing.lg,
-    paddingTop: spacing.lg
+    paddingTop: spacing.lg,
+    paddingHorizontal: spacing.md,
+    justifyContent: 'space-between',
   },
   precio: { fontSize: 18, fontWeight: '800', color: colors.primario },
+  botonReserva: {
+    backgroundColor: colors.primario,
+    borderRadius: radius.md,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.lg,
+  },
+  botonPresionado: { opacity: 0.7 },
+  textoBoton: { color: colors.superficie, fontWeight: '800' },
 });
- 
-}
