@@ -1,4 +1,4 @@
-import React, { useLayoutEffect } from "react";
+import React, { useLayoutEffect, useState} from "react";
 import { View, Text, ScrollView, StyleSheet, Alert, Image, Pressable } from 'react-native';
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
@@ -9,7 +9,46 @@ import { formatearPrecio } from "../data/clases";
 export default function DetalleClaseScreen({ route, navigation }) {
     const insets = useSafeAreaInsets();
     const { clase } = route.params;
+    const [cuposDisponibles, setCuposDisponibles] = useState(clase.cupos)
     const { isTablet } = useResponsive();
+
+    const realizarReserva = () => {
+        if(cuposDisponibles <= 0){
+            Alert.alert(
+                'Sin cupos',
+                'Esta clase ya no tiene cupos disponibles.'
+            );
+            return;
+        }
+    
+            Alert.alert(
+                'Confirmar reserva',
+                'Desea realizar la reserva?',
+                [
+                    {
+                        text: 'No',
+                        style: 'cancel',
+                        onPress: ()=>{
+                            Alert.alert(
+                                'Reserva cancelada',
+                                'Se ha cancelado la reserva'
+                            );
+                        },
+                    },
+                    {
+                        text: 'Si',
+                        onPress: () =>{
+                            setCuposDisponibles((cuposActuales) => cuposActuales -1);
+
+                            Alert.alert(
+                                'Reserva realizada',
+                                'La reserva se ha realizado correctamente'
+                            );
+                        },
+                    },
+                ]
+            );
+        }
 
     useLayoutEffect(() => {
         navigation.setOptions({ title: clase.titulo });
@@ -48,7 +87,7 @@ export default function DetalleClaseScreen({ route, navigation }) {
                         </View>
                         <View style={styles.dato}>
                             <Ionicons name="people-outline" size={20} color={colors.primario} />
-                            <Text style={styles.datoValor}>{clase.cupos} cupos</Text>
+                            <Text style={styles.datoValor}>{cuposDisponibles} cupos</Text>
                         </View>
                     </View>
 
@@ -61,7 +100,7 @@ export default function DetalleClaseScreen({ route, navigation }) {
                 <Text style={styles.precio}>{formatearPrecio(clase.precio)}</Text>
                 <Pressable
                     style={({ pressed }) => [styles.botonReserva, pressed && styles.botonPresionado]}
-                    onPress={() => Alert.alert('Realizar reserva', 'La pantalla de reserva se agregará después.')}
+                    onPress={realizarReserva}
                 >
                     <Text style={styles.textoBoton}>Realizar reserva</Text>
                 </Pressable>
